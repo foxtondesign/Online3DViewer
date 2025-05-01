@@ -1,50 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-    <link rel="icon" type="image/png" href="assets/images/3dviewer_net_favicon.ico">
-    <title>Online 3D Viewer</title>
-    <link rel="stylesheet" type="text/css" href="../build/website_dev/o3dv.website.min.css">
-    <script type="text/javascript" src="../build/website_dev/o3dv.website.min.js"></script>
-    <script type="text/javascript">
-        // Function to dynamically load the model from the query parameter
-        function loadModelFromQuery() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const modelUrl = urlParams.get('model');
-            if (modelUrl) {
-                OV.LoadModelFromUrl(modelUrl);
-            } else {
-                alert("No model specified in the URL. Please use ?model=<model-url>");
-            }
-        }
-
-        // Initialize the viewer with toolbar customization
-        window.addEventListener('DOMContentLoaded', () => {
-            OV.StartWebsite({
-                toolbar: ['rotate', 'zoom', 'hide']
-            });
-            loadModelFromQuery();
-        });
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foxton Design 3D Viewer</title>
+    <!-- Include Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.min.js"></script>
+    <!-- Include STEP Loader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/loaders/STEPFileLoader.js"></script>
+    <!-- Include STL Loader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/loaders/STLLoader.js"></script>
 </head>
 <body>
-    <div class="header" id="header">
-        <div class="title">
-            <div class="title_left">
-                <a href="index.html">
-                    <svg class="logo_image">
-                        <use href="assets/images/3dviewer_net_logo_text.svg#logo"></use>
-                    </svg>
-                </a>
-            </div>
-            <div class="title_right" id="header_buttons"></div>
-            <div class="main_file_name only_full_width" id="main_file_name"></div>
-        </div>
-        <div class="toolbar" id="toolbar"></div>
-    </div>
-    <div class="main" id="main">
-        <div class="main_viewer" id="main_viewer"></div>
-    </div>
+    <div id="viewer" style="width: 100vw; height: 100vh;"></div>
+
+    <script>
+        // Initialize Three.js Scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('viewer').appendChild(renderer.domElement);
+
+        // Add Lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1, 1, 1).normalize();
+        scene.add(light);
+
+        // Add Grid Helper (Optional)
+        const gridHelper = new THREE.GridHelper(500, 50);
+        scene.add(gridHelper);
+
+        // Load Model
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelUrl = urlParams.get('model');
+
+        if (!modelUrl) {
+            alert('No model URL provided! Add ?model=YOUR_MODEL_URL to the URL.');
+            throw new Error('No model URL provided!');
+        }
+
+        if (modelUrl.toLowerCase().endsWith('.stl')) {
+            // Load STL File
+            const loader = new THREE.STLLoader();
+            loader.load(modelUrl, function (geometry) {
+                const material = new THREE.MeshStandardMaterial({ color: 0x555555 });
+                const mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+                camera.position.z = 100;
+                animate();
+            }, undefined, function (error) {
+                console.error('An error occurred loading the STL file:', error);
+            });
+        } else if (modelUrl.toLowerCase().endsWith('.step') || modelUrl.toLowerCase().endsWith('.stp')) {
+            // Load STEP File
+            const loader = new THREE.STEPFileLoader();
+            loader.load(modelUrl, function (object) {
+                scene.add(object);
+                camera.position.z = 100;
+                animate();
+            }, undefined, function (error) {
+                console.error('An error occurred loading the STEP file:', error);
+            });
+        } else {
+            alert('Unsupported file format! Use .stl or .step.');
+            throw new Error('Unsupported file format.');
+        }
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        // Handle Window Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
 </body>
 </html>
