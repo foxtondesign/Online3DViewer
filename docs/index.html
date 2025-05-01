@@ -1,50 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-    <link rel="icon" type="image/png" href="assets/images/3dviewer_net_favicon.ico">
-    <title>Online 3D Viewer</title>
-    <link rel="stylesheet" type="text/css" href="../build/website_dev/o3dv.website.min.css">
-    <script type="text/javascript" src="../build/website_dev/o3dv.website.min.js"></script>
-    <script type="text/javascript">
-        // Function to dynamically load the model from the query parameter
-        function loadModelFromQuery() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const modelUrl = urlParams.get('model');
-            if (modelUrl) {
-                OV.LoadModelFromUrl(modelUrl);
-            } else {
-                alert("No model specified in the URL. Please use ?model=<model-url>");
-            }
-        }
-
-        // Initialize the viewer with toolbar customization
-        window.addEventListener('DOMContentLoaded', () => {
-            OV.StartWebsite({
-                toolbar: ['rotate', 'zoom', 'hide']
-            });
-            loadModelFromQuery();
-        });
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online3DViewer</title>
+    <!-- Direct references to CSS and JS from the original repository -->
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/kovacsv/Online3DViewer/master/website/website.css">
 </head>
 <body>
-    <div class="header" id="header">
-        <div class="title">
-            <div class="title_left">
-                <a href="index.html">
-                    <svg class="logo_image">
-                        <use href="assets/images/3dviewer_net_logo_text.svg#logo"></use>
-                    </svg>
-                </a>
-            </div>
-            <div class="title_right" id="header_buttons"></div>
-            <div class="main_file_name only_full_width" id="main_file_name"></div>
-        </div>
-        <div class="toolbar" id="toolbar"></div>
-    </div>
-    <div class="main" id="main">
-        <div class="main_viewer" id="main_viewer"></div>
-    </div>
+    <div id="viewer"></div>
+    <script src="https://raw.githubusercontent.com/kovacsv/Online3DViewer/master/website/website.js"></script>
+    <script>
+        // Initialize the viewer
+        const viewer = new OV.EmbeddedViewer(document.getElementById('viewer'));
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelUrl = urlParams.get('model');
+        if (modelUrl) {
+            viewer.LoadModelFromUrl(modelUrl);
+        }
+    </script>
 </body>
 </html>
