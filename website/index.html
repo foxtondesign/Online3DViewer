@@ -3,82 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foxton Design 3D Viewer</title>
-    <!-- Include Three.js -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.min.js"></script>
-    <!-- Include STEP Loader -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/loaders/STEPFileLoader.js"></script>
-    <!-- Include STL Loader -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/loaders/STLLoader.js"></script>
+    <title>3D Viewer</title>
+    <style>
+        /* Style for buttons */
+        #viewer-buttons {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+        #viewer-buttons button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
-    <div id="viewer" style="width: 100vw; height: 100vh;"></div>
+    <!-- Buttons for different camera views -->
+    <div id="viewer-buttons">
+        <button id="front-view">Front View</button>
+        <button id="side-view">Side View</button>
+        <button id="top-view">Top View</button>
+        <button id="bottom-view">Bottom View</button>
+    </div>
 
+    <!-- The 3D canvas -->
+    <canvas id="3d-viewer"></canvas>
+
+    <script src="your-3d-library.js"></script> <!-- Replace with your actual 3D library -->
     <script>
-        // Initialize Three.js Scene
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('viewer').appendChild(renderer.domElement);
+        // Initialize the 3D Viewer (replace with your actual initialization code)
+        const viewer = initializeYour3DViewer(); // Replace this with your viewer's initialization logic
 
-        // Add Lighting
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(1, 1, 1).normalize();
-        scene.add(light);
+        // Define camera positions for each view
+        const views = {
+            front: { x: 0, y: 0, z: 10 },
+            side: { x: 10, y: 0, z: 0 },
+            top: { x: 0, y: 10, z: 0 },
+            bottom: { x: 0, y: -10, z: 0 },
+        };
 
-        // Add Grid Helper (Optional)
-        const gridHelper = new THREE.GridHelper(500, 50);
-        scene.add(gridHelper);
+        // Add event listeners to buttons
+        document.getElementById('front-view').addEventListener('click', () => setView('front'));
+        document.getElementById('side-view').addEventListener('click', () => setView('side'));
+        document.getElementById('top-view').addEventListener('click', () => setView('top'));
+        document.getElementById('bottom-view').addEventListener('click', () => setView('bottom'));
 
-        // Load Model
-        const urlParams = new URLSearchParams(window.location.search);
-        const modelUrl = urlParams.get('model');
-
-        if (!modelUrl) {
-            alert('No model URL provided! Add ?model=YOUR_MODEL_URL to the URL.');
-            throw new Error('No model URL provided!');
+        // Set camera view function
+        function setView(view) {
+            const { x, y, z } = views[view];
+            viewer.camera.position.set(x, y, z); // Adjust the camera position
+            viewer.camera.lookAt(0, 0, 0); // Ensure the camera looks at the center
+            viewer.render(); // Re-render the scene
         }
-
-        if (modelUrl.toLowerCase().endsWith('.stl')) {
-            // Load STL File
-            const loader = new THREE.STLLoader();
-            loader.load(modelUrl, function (geometry) {
-                const material = new THREE.MeshStandardMaterial({ color: 0x555555 });
-                const mesh = new THREE.Mesh(geometry, material);
-                scene.add(mesh);
-                camera.position.z = 100;
-                animate();
-            }, undefined, function (error) {
-                console.error('An error occurred loading the STL file:', error);
-            });
-        } else if (modelUrl.toLowerCase().endsWith('.step') || modelUrl.toLowerCase().endsWith('.stp')) {
-            // Load STEP File
-            const loader = new THREE.STEPFileLoader();
-            loader.load(modelUrl, function (object) {
-                scene.add(object);
-                camera.position.z = 100;
-                animate();
-            }, undefined, function (error) {
-                console.error('An error occurred loading the STEP file:', error);
-            });
-        } else {
-            alert('Unsupported file format! Use .stl or .step.');
-            throw new Error('Unsupported file format.');
-        }
-
-        // Animation Loop
-        function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        }
-
-        // Handle Window Resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
     </script>
 </body>
 </html>
