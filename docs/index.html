@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online 3D Viewer</title>
+    <!-- Load CSS from the Online3DViewer repository -->
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/kovacsv/Online3DViewer/master/website/website.css">
     <style>
         body, html {
             margin: 0;
@@ -25,20 +27,19 @@
 </head>
 <body>
     <div id="viewer"></div>
+    <!-- Load JavaScript from the Online3DViewer repository -->
+    <script src="https://raw.githubusercontent.com/kovacsv/Online3DViewer/master/website/website.js"></script>
     <script>
-        // Simple STL Viewer
-        const viewer = document.getElementById('viewer');
+        // Initialize the viewer
+        const viewerElement = document.getElementById('viewer');
         const urlParams = new URLSearchParams(window.location.search);
         const modelUrl = urlParams.get('model');
 
         if (modelUrl) {
-            const scene = document.createElement('iframe');
-            scene.style.width = '100%';
-            scene.style.height = '100%';
-            scene.src = modelUrl; // Directly load STL
-            viewer.appendChild(scene);
+            const viewer = new OV.EmbeddedViewer(viewerElement);
+            viewer.LoadModelFromUrl(modelUrl);
         } else {
-            viewer.innerHTML = '<p>No model URL provided!</p>';
+            viewerElement.innerHTML = '<p>No model URL provided!</p>';
         }
     </script>
 </body>
