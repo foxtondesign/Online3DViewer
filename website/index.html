@@ -4,90 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r150/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@steptools/step-file-reader/dist/step-file-reader.min.js"></script>
     <style>
-        /* Style for buttons */
-        #viewer-buttons {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 10;
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
         }
-        #viewer-buttons button {
-            margin: 5px;
-            padding: 10px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+        #viewer {
+            width: 100vw;
+            height: 100vh;
         }
     </style>
 </head>
 <body>
-    <!-- Buttons for different camera views -->
-    <div id="viewer-buttons">
-        <button id="front-view">Front View</button>
-        <button id="side-view">Side View</button>
-        <button id="top-view">Top View</button>
-        <button id="bottom-view">Bottom View</button>
-    </div>
-
-    <!-- The 3D canvas -->
-    <canvas id="3d-viewer"></canvas>
-
-    <!-- Include the Three.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
+    <div id="viewer"></div>
     <script>
-        // Initialize Three.js
+        // Basic Three.js scene setup
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('3d-viewer') });
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.position.z = 10;
+        document.getElementById('viewer').appendChild(renderer.domElement);
 
-        // Add a sample object (e.g., cube)
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
+        // Add lighting
+        const light = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(light);
 
-        // Viewer object
-        const viewer = { 
-            camera, 
-            render: () => renderer.render(scene, camera) 
-        };
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(1, 1, 1).normalize();
+        scene.add(directionalLight);
 
-        // Render the scene
+        // Load STEP file
+        const stepFileUrl = "https://raw.githubusercontent.com/foxtondesign/MY-3D-MODELS/main/AIRBORNE-FIRE-PIT.step";
+        fetch(stepFileUrl)
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                const stepReader = new StepFileReader();
+                const stepModel = stepReader.read(buffer);
+
+                // Convert STEP to Three.js geometry
+                stepModel.shapes.forEach(shape => {
+                    const material = new THREE.MeshStandardMaterial({ color: shape.color || 0x999999 });
+                    const geometry = new THREE.BufferGeometry();
+                    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(shape.vertices), 3));
+                    geometry.setIndex(shape.indices);
+                    const mesh = new THREE.Mesh(geometry, material);
+                    scene.add(mesh);
+                });
+
+                // Auto-center and position the camera
+                const boundingBox = new THREE.Box3().setFromObject(scene);
+                const center = boundingBox.getCenter(new THREE.Vector3());
+                const size = boundingBox.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                camera.position.set(center.x, center.y, maxDim * 1.5);
+                camera.lookAt(center);
+                camera.updateProjectionMatrix();
+            })
+            .catch(error => console.error('Error loading STEP file:', error));
+
+        // Animation loop
         function animate() {
             requestAnimationFrame(animate);
-            viewer.render();
+            renderer.render(scene, camera);
         }
         animate();
 
-        // Define camera positions for each view
-        const views = {
-            front: { x: 0, y: 0, z: 10 },
-            side: { x: 10, y: 0, z: 0 },
-            top: { x: 0, y: 10, z: 0 },
-            bottom: { x: 0, y: -10, z: 0 },
-        };
-
-        // Add event listeners to buttons
-        document.getElementById('front-view').addEventListener('click', () => setView('front'));
-        document.getElementById('side-view').addEventListener('click', () => setView('side'));
-        document.getElementById('top-view').addEventListener('click', () => setView('top'));
-        document.getElementById('bottom-view').addEventListener('click', () => setView('bottom'));
-
-        // Set camera view function
-        function setView(view) {
-            const { x, y, z } = views[view];
-            viewer.camera.position.set(x, y, z); // Adjust the camera position
-            viewer.camera.lookAt(0, 0, 0); // Ensure the camera looks at the center
-            viewer.render(); // Re-render the scene
-        }
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
