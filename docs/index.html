@@ -8,8 +8,8 @@
         /* Adjust the viewer size */
         canvas {
             display: block;
-            width: 80%;
-            height: 80%;
+            width: 600px; /* Fixed width */
+            height: 400px; /* Fixed height */
             margin: 20px auto;
             border: 2px solid #ccc;
             box-sizing: border-box;
@@ -47,6 +47,8 @@
 
     <!-- Include the Three.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Include OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
     <!-- Include STL Loader -->
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STLLoader.js"></script>
     <!-- Include JSZip for STEPLoader -->
@@ -57,9 +59,9 @@
     <script>
         // Initialize Three.js
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, 600 / 400, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('3d-viewer') });
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(600, 400);
         camera.position.set(5, 5, 5);
 
         // Add lights
@@ -122,22 +124,36 @@
 
         // Function to load STL files
         function loadSTL(path) {
-            stlLoader.load(path, (geometry) => {
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                const mesh = new THREE.Mesh(geometry, material);
-                scene.add(mesh);
-            }, undefined, (error) => {
-                console.error('An error occurred while loading the STL file:', error);
-            });
+            console.log('Attempting to load STL file from:', path);
+            stlLoader.load(
+                path,
+                (geometry) => {
+                    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    scene.add(mesh);
+                    console.log('STL file loaded successfully');
+                },
+                undefined,
+                (error) => {
+                    console.error('An error occurred while loading the STL file:', error);
+                }
+            );
         }
 
         // Function to load STEP files
         function loadSTEP(path) {
-            stepLoader.load(path, (object) => {
-                scene.add(object);
-            }, undefined, (error) => {
-                console.error('An error occurred while loading the STEP file:', error);
-            });
+            console.log('Attempting to load STEP file from:', path);
+            stepLoader.load(
+                path,
+                (object) => {
+                    scene.add(object);
+                    console.log('STEP file loaded successfully');
+                },
+                undefined,
+                (error) => {
+                    console.error('An error occurred while loading the STEP file:', error);
+                }
+            );
         }
     </script>
 </body>
