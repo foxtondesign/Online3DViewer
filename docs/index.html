@@ -29,9 +29,31 @@
             font-size: 14px;
             cursor: pointer;
         }
+
+        /* Logo placeholder */
+        #logo {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        #logo img {
+            width: 100px; /* Adjust the size of your logo */
+            height: auto;
+        }
     </style>
+
+    <!-- Placeholder for favicon -->
+    <link rel="icon" href="favicon.ico">
 </head>
 <body>
+    <!-- Placeholder for your logo -->
+    <div id="logo">
+        <!-- Replace 'logo-placeholder.png' with the path to your logo file -->
+        <img src="logo-placeholder.png" alt="Company Logo">
+    </div>
+
     <!-- Buttons for different camera views -->
     <div id="viewer-buttons">
         <button id="front-view">Front View</button>
@@ -51,10 +73,8 @@
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
     <!-- Include STL Loader -->
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STLLoader.js"></script>
-    <!-- Include JSZip for STEPLoader -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- Include STEP Loader -->
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STEPLoader.js"></script>
+    <!-- Include STEPFileLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STEPFileLoader.js"></script>
 
     <script>
         // Initialize Three.js
@@ -106,7 +126,7 @@
 
         // Loaders for STL and STEP files
         const stlLoader = new THREE.STLLoader();
-        const stepLoader = new THREE.STEPLoader();
+        const stepLoader = new THREE.STEPFileLoader();
 
         // Paths to the DOG-AND-DUCK file in both formats
         const stlPath = './docs/DOG-AND-DUCK-V4.stl'; // Adjust the path if necessary
