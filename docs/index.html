@@ -8,8 +8,8 @@
         /* Adjust the viewer size */
         canvas {
             display: block;
-            width: 80%; /* Set the viewer width to 80% of the screen */
-            height: 80%; /* Set the viewer height to 80% of the screen */
+            width: 60%; /* Set the viewer width to 60% of the screen */
+            height: 60%; /* Set the viewer height to 60% of the screen */
             margin: 20px auto; /* Center it horizontally and add some margin around it */
             border: 2px solid #ccc; /* Optional: Add a border for better visibility */
             box-sizing: border-box;
@@ -52,7 +52,7 @@
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('3d-viewer') });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.position.z = 10;
+        camera.position.set(5, 5, 5);
 
         // Add a sample object (e.g., cube)
         const geometry = new THREE.BoxGeometry();
@@ -60,25 +60,22 @@
         const cube = new THREE.Mesh(geometry, material);
         scene.add(cube);
 
-        // Viewer object
-        const viewer = { 
-            camera, 
-            render: () => renderer.render(scene, camera) 
-        };
+        // Add orbit controls for interaction
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
         // Render the scene
-        function animate() {
-            requestAnimationFrame(animate);
-            viewer.render();
-        }
-        animate();
+        const render = function () {
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+        };
+        render();
 
         // Define camera positions for each view
         const views = {
-            front: { x: 0, y: 0, z: 10 },
-            side: { x: 10, y: 0, z: 0 },
-            top: { x: 0, y: 10, z: 0 },
-            bottom: { x: 0, y: -10, z: 0 },
+            front: { x: 0, y: 0, z: 5 },
+            side: { x: 5, y: 0, z: 0 },
+            top: { x: 0, y: 5, z: 0 },
+            bottom: { x: 0, y: -5, z: 0 },
         };
 
         // Add event listeners to buttons
@@ -90,9 +87,9 @@
         // Set camera view function
         function setView(view) {
             const { x, y, z } = views[view];
-            viewer.camera.position.set(x, y, z); // Adjust the camera position
-            viewer.camera.lookAt(0, 0, 0); // Ensure the camera looks at the center
-            viewer.render(); // Re-render the scene
+            camera.position.set(x, y, z); // Move the camera to the new position
+            camera.lookAt(0, 0, 0); // Ensure the camera looks at the cube
+            controls.update();
         }
     </script>
 </body>
