@@ -43,15 +43,11 @@
             height: auto;
         }
     </style>
-
-    <!-- Placeholder for favicon -->
-    <link rel="icon" href="favicon.ico">
 </head>
 <body>
     <!-- Placeholder for your logo -->
     <div id="logo">
-        <!-- Replace 'logo-placeholder.png' with the path to your logo file -->
-        <img src="logo-placeholder.png" alt="Company Logo">
+        <p>Company Logo</p> <!-- Placeholder text -->
     </div>
 
     <!-- Buttons for different camera views -->
@@ -73,8 +69,8 @@
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
     <!-- Include STL Loader -->
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STLLoader.js"></script>
-    <!-- Include STEPFileLoader -->
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STEPFileLoader.js"></script>
+    <!-- Include STEP Worker Loader -->
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STEPWorker.js"></script>
 
     <script>
         // Initialize Three.js
@@ -126,7 +122,7 @@
 
         // Loaders for STL and STEP files
         const stlLoader = new THREE.STLLoader();
-        const stepLoader = new THREE.STEPFileLoader();
+        const stepLoader = new THREE.STEPWorkerLoader();
 
         // Paths to the DOG-AND-DUCK file in both formats
         const stlPath = './docs/DOG-AND-DUCK-V4.stl'; // Adjust the path if necessary
