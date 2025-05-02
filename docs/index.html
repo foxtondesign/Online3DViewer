@@ -1,176 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Viewer</title>
-    <style>
-        /* Adjust the viewer size */
-        canvas {
-            display: block;
-            width: 600px; /* Fixed width */
-            height: 400px; /* Fixed height */
-            margin: 20px auto;
-            border: 2px solid #ccc;
-            box-sizing: border-box;
-        }
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<link rel="icon" type="image/png" href="static/3dviewer_net_favicon.ico">
 
-        /* Buttons container */
-        #viewer-buttons {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 10;
-        }
+	<title>Online 3D Viewer - Home</title>
 
-        #viewer-buttons button {
-            margin: 5px;
-            padding: 10px;
-            font-size: 14px;
-            cursor: pointer;
-        }
+	<link rel="stylesheet" href="static/highlightjs/styles/github.min.css"/>
+	<script src="static/highlightjs/highlight.min.js"></script>
 
-        /* Logo placeholder */
-        #logo {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 10;
-        }
-
-        #logo img {
-            width: 100px; /* Adjust the size of your logo */
-            height: auto;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="static/style.css"/>
+	<script type="text/javascript" src="static/script.js"></script>
 </head>
+
 <body>
-    <!-- Placeholder for your logo -->
-    <div id="logo">
-        <p>Company Logo</p> <!-- Placeholder text -->
-    </div>
+<div id="navigation_toggle" class="navigation_toggle"><img id="navigation_icon" src="static/menu.svg"/></div>
+<div id="navigation" class="navigation thin_scrollbar">
+<div class="navigation_section">
+<div class="navigation_title">Pages</div>
+<div id="nav-Home" class="navigation_item"><a href="index.html" target="_self">Home</a></div>
+<div id="nav-GitHub" class="navigation_item"><a href="https://github.com/kovacsv/Online3DViewer" target="_blank">GitHub</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Engine Usage</div>
+<div id="nav-Installation" class="navigation_item"><a href="Page_Installation.html" target="_self">Installation</a></div>
+<div id="nav-Usage" class="navigation_item"><a href="Page_Usage.html" target="_self">Usage</a></div>
+<div id="nav-Migration Guide" class="navigation_item"><a href="Page_MigrationGuide.html" target="_self">Migration Guide</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Contribution</div>
+<div id="nav-Contribution Guidelines" class="navigation_item"><a href="Page_ContributionGuidelines.html" target="_self">Contribution Guidelines</a></div>
+<div id="nav-Environment Setup" class="navigation_item"><a href="Page_EnvironmentSetup.html" target="_self">Environment Setup</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Classes</div>
+<div id="nav-Camera" class="navigation_item"><a href="Class_Camera.html" target="_self">Camera</a></div>
+<div id="nav-EdgeSettings" class="navigation_item"><a href="Class_EdgeSettings.html" target="_self">EdgeSettings</a></div>
+<div id="nav-EmbeddedViewer" class="navigation_item"><a href="Class_EmbeddedViewer.html" target="_self">EmbeddedViewer</a></div>
+<div id="nav-EnvironmentSettings" class="navigation_item"><a href="Class_EnvironmentSettings.html" target="_self">EnvironmentSettings</a></div>
+<div id="nav-InputFile" class="navigation_item"><a href="Class_InputFile.html" target="_self">InputFile</a></div>
+<div id="nav-RGBAColor" class="navigation_item"><a href="Class_RGBAColor.html" target="_self">RGBAColor</a></div>
+<div id="nav-RGBColor" class="navigation_item"><a href="Class_RGBColor.html" target="_self">RGBColor</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Functions</div>
+<div id="nav-Init3DViewerElements" class="navigation_item"><a href="Function_Init3DViewerElements.html" target="_self">Init3DViewerElements</a></div>
+<div id="nav-Init3DViewerFromFileList" class="navigation_item"><a href="Function_Init3DViewerFromFileList.html" target="_self">Init3DViewerFromFileList</a></div>
+<div id="nav-Init3DViewerFromUrlList" class="navigation_item"><a href="Function_Init3DViewerFromUrlList.html" target="_self">Init3DViewerFromUrlList</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Enums</div>
+<div id="nav-FileSource" class="navigation_item"><a href="Enum_FileSource.html" target="_self">FileSource</a></div>
+<div id="nav-NavigationMode" class="navigation_item"><a href="Enum_NavigationMode.html" target="_self">NavigationMode</a></div>
+<div id="nav-ProjectionMode" class="navigation_item"><a href="Enum_ProjectionMode.html" target="_self">ProjectionMode</a></div>
+</div>
 
-    <!-- Buttons for different camera views -->
-    <div id="viewer-buttons">
-        <button id="front-view">Front View</button>
-        <button id="side-view">Side View</button>
-        <button id="top-view">Top View</button>
-        <button id="bottom-view">Bottom View</button>
-        <button id="load-stl">Load STL</button>
-        <button id="load-step">Load STEP</button>
-    </div>
+</div>
+<div id="main" class="main">
+<div class="page">
+<h1>Online 3D Viewer</h1>
 
-    <!-- The 3D canvas -->
-    <canvas id="3d-viewer"></canvas>
+<p>Online 3D Viewer is a solution to visualize and explore 3D models in your browser. The solution builds up from two parts.</p>
 
-    <!-- Include the Three.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Include OrbitControls -->
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
-    <!-- Include STL Loader -->
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STLLoader.js"></script>
-    <!-- Include STEP Worker Loader -->
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STEPWorker.js"></script>
+<ul>
+    <li><b>Engine:</b> A library to import, visualize and export 3D models. It can be used on any website to embed 3D models easily.</li>
+    <li><b>Website:</b> The source code of the <a href="https://3dviewer.net" target="_blank">https://3dviewer.net</a> site which uses the engine under the hood.</li>
+</ul>
 
-    <script>
-        // Initialize Three.js
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, 600 / 400, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('3d-viewer') });
-        renderer.setSize(600, 400);
-        camera.position.set(5, 5, 5);
+<h2>Engine Usage</h2>
 
-        // Add lights
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(10, 10, 10);
-        scene.add(light);
+<p>These documents help you understanding how to use the engine in your own solution.</p>
 
-        const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
-        scene.add(ambientLight);
+<ul>
+    <li><a href="Page_Installation.html" target="_self">Installation</a> - How to get the package?</li>
+    <li><a href="Page_Usage.html" target="_self">Usage</a> - How to use it to embed 3D models?</li>
+    <li><a href="Page_MigrationGuide.html" target="_self">Migration Guide</a> - What needs to be done when you update the library?</li>
+</ul>
 
-        // Add orbit controls for interaction
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+<h2>Contribution</h2>
 
-        // Render the scene
-        const render = function () {
-            requestAnimationFrame(render);
-            renderer.render(scene, camera);
-        };
-        render();
+<p>If you would like to contribute to the codebase, these documents help you to start.</p>
 
-        // Define camera positions for each view
-        const views = {
-            front: { x: 0, y: 0, z: 5 },
-            side: { x: 5, y: 0, z: 0 },
-            top: { x: 0, y: 5, z: 0 },
-            bottom: { x: 0, y: -5, z: 0 },
-        };
+<ul>
+    <li><a href="Page_ContributionGuidelines.html" target="_self">Contribution Guidelines</a> - How to contribute to the repository?</li>
+    <li><a href="Page_EnvironmentSetup.html" target="_self">Environment Setup</a> - How to set up your environment for development?</li>
+</ul>
 
-        // Set camera view function
-        function setView(view) {
-            const { x, y, z } = views[view];
-            camera.position.set(x, y, z);
-            camera.lookAt(0, 0, 0);
-            controls.update();
-        }
-
-        // Add event listeners to buttons
-        document.getElementById('front-view').addEventListener('click', () => setView('front'));
-        document.getElementById('side-view').addEventListener('click', () => setView('side'));
-        document.getElementById('top-view').addEventListener('click', () => setView('top'));
-        document.getElementById('bottom-view').addEventListener('click', () => setView('bottom'));
-
-        // Loaders for STL and STEP files
-        const stlLoader = new THREE.STLLoader();
-        const stepLoader = new THREE.STEPWorkerLoader();
-
-        // Paths to the DOG-AND-DUCK file in both formats
-        const stlPath = './docs/DOG-AND-DUCK-V4.stl'; // Adjust the path if necessary
-        const stepPath = './docs/DOG-AND-DUCK-V4.step'; // Adjust the path if necessary
-
-        // Load STL file
-        document.getElementById('load-stl').addEventListener('click', () => {
-            loadSTL(stlPath);
-        });
-
-        // Load STEP file
-        document.getElementById('load-step').addEventListener('click', () => {
-            loadSTEP(stepPath);
-        });
-
-        // Function to load STL files
-        function loadSTL(path) {
-            console.log('Attempting to load STL file from:', path);
-            stlLoader.load(
-                path,
-                (geometry) => {
-                    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                    const mesh = new THREE.Mesh(geometry, material);
-                    scene.add(mesh);
-                    console.log('STL file loaded successfully');
-                },
-                undefined,
-                (error) => {
-                    console.error('An error occurred while loading the STL file:', error);
-                }
-            );
-        }
-
-        // Function to load STEP files
-        function loadSTEP(path) {
-            console.log('Attempting to load STEP file from:', path);
-            stepLoader.load(
-                path,
-                (object) => {
-                    scene.add(object);
-                    console.log('STEP file loaded successfully');
-                },
-                undefined,
-                (error) => {
-                    console.error('An error occurred while loading the STEP file:', error);
-                }
-            );
-        }
-    </script>
+</div>
+</div>
+<script type="text/javascript">Init ('Home')</script>
 </body>
+
 </html>
